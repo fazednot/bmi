@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>BMI Calculator</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="container">
+    <div class="header-row">
+      <h1 class="title">BMI Calculator</h1>
+      <button id="themeToggle" class="theme-toggle" aria-pressed="false" title="Toggle dark mode">🌙</button>
+    </div>
+
+    <section class="card">
+      <form id="bmi-form" class="form" onsubmit="return false;">
+        <label class="field">
+          <span class="label-text">Age</span>
+          <input id="age" type="number" min="0" placeholder="Enter your age" />
+        </label>
+
+        <label class="field">
+          <span class="label-text">Height (cm)</span>
+          <input id="height" type="number" min="0" placeholder="Enter your height" />
+        </label>
+
+        <label class="field">
+          <span class="label-text">Weight (kg)</span>
+          <input id="weight" type="number" min="0" placeholder="Enter your weight" />
+        </label>
+
+        <div class="gender-row">
+          <button type="button" id="maleBtn" class="gender-btn active">Male</button>
+          <button type="button" id="femaleBtn" class="gender-btn">Female</button>
+        </div>
+
+        <button id="calcBtn" class="calc-btn">Calculate BMI</button>
+        <div class="save-row">
+          <button type="button" id="clearSavedBtn" class="secondary-btn">Clear Saved</button>
+        </div>
+      </form>
+
+      <div class="result">
+        <div class="result-row">
+          <div class="result-label">BMI:</div>
+          <div id="bmiValue" class="result-value">—</div>
+        </div>
+        <div class="result-row">
+          <div class="result-label">Result:</div>
+          <div id="bmiText" class="result-value">—</div>
+        </div>
+      </div>
+      <div id="savedInfo" class="saved-info" aria-live="polite"></div>
+    </section>
+
+    <footer class="credit">DONE BY ABRAHAM NIGATU</footer>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
