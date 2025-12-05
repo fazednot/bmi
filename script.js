@@ -1,4 +1,4 @@
-(function(){
+(function () {
   const maleBtn = document.getElementById('maleBtn');
   const femaleBtn = document.getElementById('femaleBtn');
   const calcBtn = document.getElementById('calcBtn');
@@ -12,16 +12,16 @@
 
   let gender = 'male';
 
-  function setActive(btn){
+  function setActive(btn) {
     maleBtn.classList.remove('active');
     femaleBtn.classList.remove('active');
     btn.classList.add('active');
   }
 
-  maleBtn.addEventListener('click', ()=>{ gender='male'; setActive(maleBtn); });
-  femaleBtn.addEventListener('click', ()=>{ gender='female'; setActive(femaleBtn); });
+  maleBtn.addEventListener('click', () => { gender = 'male'; setActive(maleBtn); });
+  femaleBtn.addEventListener('click', () => { gender = 'female'; setActive(femaleBtn); });
 
-  function classify(bmi){
+  function classify(bmi) {
     if (bmi < 16) return 'Severely underweight';
     if (bmi < 18.5) return 'Underweight';
     if (bmi < 25) return 'Normal';
@@ -30,16 +30,16 @@
     return 'Extremely obese';
   }
 
-  function round(n, decimals=2){
+  function round(n, decimals = 2) {
     const p = Math.pow(10, decimals);
     return Math.round(n * p) / p;
   }
 
-  calcBtn.addEventListener('click', ()=>{
+  calcBtn.addEventListener('click', () => {
     const h = parseFloat(heightInput.value);
     const w = parseFloat(weightInput.value);
 
-    if (!h || !w){
+    if (!h || !w) {
       alert('Please enter valid height and weight values');
       return;
     }
@@ -50,7 +50,6 @@
 
     bmiValueEl.textContent = bmiRounded.toFixed(2);
     bmiTextEl.textContent = classify(bmiRounded);
-    // because i want to save last result to local variables and auto-save to localStorage
     lastResult = {
       age: ageInput.value || '',
       height: h,
@@ -60,82 +59,78 @@
       category: classify(bmiRounded),
       timestamp: Date.now()
     };
-    
-    try{
+
+    try {
       localStorage.setItem('bmi_last', JSON.stringify(lastResult));
       savedInfo.textContent = 'Auto-saved last result.';
-    }catch(e){
+    } catch (e) {
       console.warn('Auto-save failed', e);
     }
-    //it applies color-coded class based on category
     applyCategoryClass(lastResult.bmi);
     showSavedInfo();
   });
 
-  // localStorage helpers
+
   let lastResult = null;
-
-  // Theme (dark mode) helpers
   const themeToggle = document.getElementById('themeToggle');
-  const THEME_KEY = 'theme'; // stored value: 'dark' or 'light'
+  const THEME_KEY = 'theme'; 
 
-  function applyTheme(theme){
+  function applyTheme(theme) {
     const root = document.documentElement;
-    if (theme === 'dark'){
+    if (theme === 'dark') {
       root.setAttribute('data-theme', 'dark');
-      if (themeToggle) themeToggle.setAttribute('aria-pressed','true');
+      if (themeToggle) themeToggle.setAttribute('aria-pressed', 'true');
       if (themeToggle) themeToggle.textContent = '☀️';
     } else {
       root.removeAttribute('data-theme');
-      if (themeToggle) themeToggle.setAttribute('aria-pressed','false');
+      if (themeToggle) themeToggle.setAttribute('aria-pressed', 'false');
       if (themeToggle) themeToggle.textContent = '🌙';
     }
   }
 
-  function saveTheme(theme){
-    try{ localStorage.setItem(THEME_KEY, theme); }catch(e){/*ignore*/}
+  function saveTheme(theme) {
+    try { localStorage.setItem(THEME_KEY, theme); } catch (e) {/*ignore*/ }
   }
 
-  function loadTheme(){
-    try{
+  function loadTheme() {
+    try {
       const t = localStorage.getItem(THEME_KEY);
       if (t === 'dark' || t === 'light') return t;
-    }catch(e){ }
-    // fallback to system preference
+    } catch (e) { }
     if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) return 'dark';
     return 'light';
   }
 
-  function toggleTheme(){
+  function toggleTheme() {
     const current = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
     const next = current === 'dark' ? 'light' : 'dark';
     applyTheme(next);
     saveTheme(next);
   }
 
-  if (themeToggle){
+  if (themeToggle) {
     themeToggle.addEventListener('click', toggleTheme);
   }
 
-  function showSavedInfo(){
+  function showSavedInfo() {
     if (!lastResult) return savedInfo.textContent = '';
     const d = new Date(lastResult.timestamp);
     savedInfo.textContent = `Last calculation — BMI: ${lastResult.bmi.toFixed(2)} (${lastResult.category}) — ${d.toLocaleString()}`;
   }
 
-  function loadSaved(){
-    try{
+  function loadSaved() {
+    try {
       const raw = localStorage.getItem('bmi_last');
       if (!raw) return null;
       const obj = JSON.parse(raw);
       return obj;
-    }catch(e){
+    } catch (e) {
       console.error('Failed to parse saved data', e);
       return null;
     }
   }
 
-  function populateFrom(obj){
+  function populateFrom(obj) {
     if (!obj) return;
     ageInput.value = obj.age || '';
     heightInput.value = obj.height || '';
@@ -148,38 +143,33 @@
     applyCategoryClass(obj.bmi);
     showSavedInfo();
   }
-  clearSavedBtn.addEventListener('click', ()=>{
+  clearSavedBtn.addEventListener('click', () => {
     localStorage.removeItem('bmi_last');
     lastResult = null;
     savedInfo.textContent = 'Cleared saved result.';
-    // clear UI outputs
     bmiValueEl.textContent = '—';
     bmiTextEl.textContent = '—';
-    // remove any category class on the card
     document.querySelector('.card').classList.remove(
-      'category-severely-underweight','category-underweight','category-normal','category-overweight','category-obese','category-extremely-obese'
+      'category-severely-underweight', 'category-underweight', 'category-normal', 'category-overweight', 'category-obese', 'category-extremely-obese'
     );
   });
 
-  // On load, populate UI from saved (handle both cases whether DOMContentLoaded already fired)
-  function init(){
+  function init() {
     const loaded = loadSaved();
     if (loaded) populateFrom(loaded);
-    // apply saved or preferred theme
     const theme = loadTheme();
     applyTheme(theme);
   }
-  if (document.readyState === 'loading'){
+  if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
   } else {
     init();
   }
 
-  function applyCategoryClass(bmi){
+  function applyCategoryClass(bmi) {
     const card = document.querySelector('.card');
     if (!card) return;
-    // remove existing category classes
-    card.classList.remove('category-severely-underweight','category-underweight','category-normal','category-overweight','category-obese','category-extremely-obese');
+    card.classList.remove('category-severely-underweight', 'category-underweight', 'category-normal', 'category-overweight', 'category-obese', 'category-extremely-obese');
     if (bmi == null || isNaN(bmi)) return;
     let cls = '';
     if (bmi < 16) cls = 'category-severely-underweight';
